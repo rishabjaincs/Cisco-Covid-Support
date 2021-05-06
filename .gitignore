@@ -1,0 +1,8 @@
+Include/
+Lib/
+Scripts/
+__pycache__/
+tcl/
+.ipynb_checkpoints/
+TestCode.ipynb
+*.ipynb
