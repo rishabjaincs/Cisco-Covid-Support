@@ -8,11 +8,11 @@ from sender import direct_message as sendOUT
 from sender import delete_message as deleteIN
 from CovidBuddy import InformationRequestCard
 from UserConsentCard import BuddyAssistApproval
+from CovidHelp import gettingStarted
 from sender import non_urgent_message_chain
 import stdiomask
 
-# token=stdiomask.getpass(prompt='Enter the Access Token:', mask="*") 
-token=""
+token=stdiomask.getpass(prompt='Enter the Access Token:', mask="*") 
 
 
 #This is a global header declared that will be used by all the API calls
@@ -28,7 +28,7 @@ def get_requester_detail(user_id):
 
 def UserValidator(raw_data):
     if raw_data['data']['roomType']=='direct' and raw_data['data']["personEmail"]!="covid_support@webex.bot":
-        startToken(raw_data['data']['personEmail'])
+        gettingStarted(raw_data['data']['personEmail'],token)
         
 
 
@@ -36,7 +36,15 @@ def AttachmentValidator(raw_data):
     status=True
     ReqDetails=raw_data['data']['inputs']
     user_info=get_requester_detail(raw_data['data']['personId'])
-    if ReqDetails['status']=='request':
+
+    if ReqDetails['status']=='start':
+        if ReqDetails['state']=='':
+            message="\ud83d\udd34 **Please Select the Appropriate State !!** \ud83d\udd34"
+            sendIN(token,raw_data,message)
+        else:
+            startToken(raw_data['data']['roomId'],raw_data['data']['messageId'],token,ReqDetails['state'])
+
+    elif ReqDetails['status']=='request':
         # will send this request further to check if we have any data related to it available or not.
         if ReqDetails['state']=='':
             message="\ud83d\udd34 **Please Select the Appropriate State !!** \ud83d\udd34"
@@ -53,7 +61,7 @@ def AttachmentValidator(raw_data):
         if status==True:
             search_result={}
             if bool(search_result)==False:      
-                BuddyAssistApproval(ReqDetails,user_info,raw_data['data']['messageId'])
+                BuddyAssistApproval(ReqDetails,user_info,raw_data['data']['messageId'],token)
             else:
                 print("Share search result")
 
@@ -72,7 +80,7 @@ def FurtherAssistanceNeeded(raw_data):
         deleteIN(token,raw_data)
         message="Your request has been processed !!!"
         non_urgent_message_chain(token,raw_data,message,ReqDetails['parentId'])
-        InformationRequestCard(ReqDetails,user_info)
+        InformationRequestCard(ReqDetails,user_info,token)
     else:
         deleteIN(token,raw_data)
         print("send it over to DB by default")

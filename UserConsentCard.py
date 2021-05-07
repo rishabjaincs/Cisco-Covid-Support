@@ -3,11 +3,9 @@ import json
 import flask
 from flask import request,jsonify
 
-token=""
 
-headers={'content-type': "application/json; charset=utf-8",
-         'authorization':'Bearer {}'.format(token),
-         'accept':"application/json"}
+
+
 
 
 def approval_frame(inputs,user_info,parent_id):
@@ -73,10 +71,14 @@ def approval_frame(inputs,user_info,parent_id):
     return body
 
 
-def BuddyAssistApproval(inputs,user_info,parent_id):
+def BuddyAssistApproval(inputs,user_info,parent_id,token):
     body=approval_frame(inputs,user_info,parent_id)
     url="https://webexapis.com/v1/messages"
 
+    headers={'content-type': "application/json; charset=utf-8",
+         'authorization':'Bearer {}'.format(token),
+         'accept':"application/json"}
+         
     card={
       "toPersonEmail": user_info['emails'][0],
       "parentId": parent_id,

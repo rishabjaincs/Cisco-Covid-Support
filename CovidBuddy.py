@@ -3,11 +3,7 @@ import json
 import flask
 from flask import request,jsonify
 
-token=""
 
-headers={'content-type': "application/json; charset=utf-8",
-         'authorization':'Bearer {}'.format(token),
-         'accept':"application/json"}
 
 
 def body_frame(inputs,user_info):
@@ -124,12 +120,16 @@ def body_frame(inputs,user_info):
 
 
 
-def InformationRequestCard(inputs,user_info):
+def InformationRequestCard(inputs,user_info,token):
     body=body_frame(inputs,user_info)
     url="https://webexapis.com/v1/messages"
 
+    headers={'content-type': "application/json; charset=utf-8",
+         'authorization':'Bearer {}'.format(token),
+         'accept':"application/json"}
+
     card={
-      "roomId":'add your group room-id',
+      "roomId":'Y2lzY29zcGFyazovL3VzL1JPT00vMjcwZjFjOTAtYWQ5Yi0xMWViLWEzZTAtNjU3ZWM1NjhhY2Q0',
       "markdown": "Moderators Validation for Token !!!",
       "attachments": [
         {
