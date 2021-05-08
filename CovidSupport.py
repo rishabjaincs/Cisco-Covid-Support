@@ -66,7 +66,7 @@ def body_frame(cityMap,state):
                         "items": [
                             {
                                 "type": "Input.Text",
-                                "placeholder": "560001",
+                                "placeholder": "Optional",
                                 "id": "pincode",
                                 "maxLength": 6
                             }
@@ -266,7 +266,7 @@ def body_frame(cityMap,state):
                                             "items": [
                                                 {
                                                     "type": "TextBlock",
-                                                    "text": "Contact Person",
+                                                    "text": "Primary Contact",
                                                     "wrap": True,
                                                     "horizontalAlignment": "Center"
                                                 }
@@ -296,7 +296,7 @@ def body_frame(cityMap,state):
                                             "items": [
                                                 {
                                                     "type": "TextBlock",
-                                                    "text": "Contact Information",
+                                                    "text": "Primary Number",
                                                     "wrap": True,
                                                     "horizontalAlignment": "Center"
                                                 }
@@ -313,6 +313,67 @@ def body_frame(cityMap,state):
                                                     "placeholder": "9876543210",
                                                     "style": "Tel",
                                                     "id": "contactnumber"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": 40,
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Secondary Contact",
+                                                    "wrap": True,
+                                                    "horizontalAlignment": "Center"
+                                                }
+                                            ],
+                                            "horizontalAlignment": "Center",
+                                            "verticalContentAlignment": "Center"
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": 60,
+                                            "items": [
+                                                {
+                                                    "type": "Input.Text",
+                                                    "placeholder": "Optional",
+                                                    "id": "contactnamesecondary"
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "ColumnSet",
+                                    "columns": [
+                                        {
+                                            "type": "Column",
+                                            "width": 40,
+                                            "items": [
+                                                {
+                                                    "type": "TextBlock",
+                                                    "text": "Secondary Number",
+                                                    "wrap": True,
+                                                    "horizontalAlignment": "Center"
+                                                }
+                                            ],
+                                            "horizontalAlignment": "Center",
+                                            "verticalContentAlignment": "Center"
+                                        },
+                                        {
+                                            "type": "Column",
+                                            "width": 60,
+                                            "items": [
+                                                {
+                                                    "type": "Input.Text",
+                                                    "placeholder": "Optional",
+                                                    "style": "Tel",
+                                                    "id": "contactnumbersecondary"
                                                 }
                                             ]
                                         }

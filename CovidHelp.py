@@ -183,7 +183,7 @@ def gettingStarted(userEmail,token):
 
     card={
      "toPersonEmail": userEmail,
-      "markdown": "Token Master Form to get the Consent Response !!",
+      "markdown": "Cicso Covid Support, Needs more detail !!",
       "attachments": [
         {
           "contentType": "application/vnd.microsoft.card.adaptive",

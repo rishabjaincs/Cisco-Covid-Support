@@ -1,11 +1,10 @@
 from pprint import pprint
 import requests
 import json
+import pickle
 
 
 def perform_mongo_db_insert(input_json, resource, action):
-    access_token = get_bdb_token()
-
     json_payload = {
         "printLogs": True,
         "dev": True,
@@ -16,18 +15,19 @@ def perform_mongo_db_insert(input_json, resource, action):
                 "params": input_json
             }},
     }
-    api_endpoint = "https://scripts.cisco.com/api/v2/jobs/coverified_backend"
-    headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(access_token)}
-    r = requests.post(url=api_endpoint, data=json.dumps(json_payload), headers=headers)
+    r = requests.post('https://scripts.cisco.com/api/v2/jobs/coverified_backend',
+                            data=json.dumps(json_payload),
+                            cookies=get_sso_cookie(),
+                            headers={'Content-Type': 'application/json'})
     pprint(r.text)
     server_response = json.loads(r.text)
+    print(server_response)
     response_array = server_response["data"]["variables"]["_0"]["json_out"]
     response_array_json = json.loads(response_array)
     return response_array_json["description"]
 
 
 def perform_mongo_db_search(input_json):
-    access_token = get_bdb_token()
     input_status = input_json["status"]
     response_array_json = None
     if input_status == "request":
@@ -36,28 +36,29 @@ def perform_mongo_db_search(input_json):
         city = input_json["city"]
         contact_name = input_json["contactname"]
         contact_number = input_json["contactnumber"]
-        # pincode = input_json["pincode"]
-        # request_elaborate = input_json["RequestElaborate"]
-        # sev = input_json["sev"]
-
+        pin_code = input_json["pincode"]
+        request_comments = input_json["RequestElaborate"]
+        severity = input_json["sev"]
+        user_id = input_json["user_id"]
 
         insert_json = {
             "helpType": help_type,
             "helpCity": city,
             "helpState": state,
             "contactName": contact_name,
-            "contactNumber": contact_number
-            # "pinCode":pincode,
-            # "requestComments":request_elaborate,
-            # "severity":sev
+            "contactNumber": contact_number,
+            "pinCode": pin_code,
+            "requestComments": request_comments,
+            "severity": severity,
+            "userId": user_id
         }
-        # res = perform_mongo_db_insert(insert_json, "help", "post_quick")
-        # pprint(res)
+        res = perform_mongo_db_insert(insert_json, "help", "post_quick")
+        pprint(res)
         nearby_cities = get_nearby_cities(city, state)
         if len(nearby_cities) == 0:
             nearby_cities.append(city)
         input_json = {
-            "query": {"leadState": state, "leadType": help_type, "leadCity": { "$in": nearby_cities}},
+            "query": {"leadState": state, "leadType": help_type, "leadCity": {"$in": nearby_cities}},
             "limit": 0,
             "skip": 0
         }
@@ -71,22 +72,21 @@ def perform_mongo_db_search(input_json):
                 }},
 
         }
-        api_endpoint = "https://scripts.cisco.com/api/v2/jobs/coverified_backend"
-        headers = {'Content-type': 'application/json', 'Authorization': 'Bearer {}'.format(access_token)}
-        r = requests.post(url=api_endpoint, data=json.dumps(json_payload), headers=headers)
-        server_response = json.loads(r.text)
-        # print(server_response)
+        req = requests.post('https://scripts.cisco.com/api/v2/jobs/coverified_backend',
+                            data=json.dumps(json_payload),
+                            cookies=get_sso_cookie(),
+                            headers={'Content-Type': 'application/json'})
+        server_response = json.loads(req.text)
+        print(server_response)
         response_array = server_response["data"]["variables"]["_0"]["json_out"]
         response_array_json = json.loads(response_array)
 
     return response_array_json
 
 
-def get_bdb_token():
-    r = requests.get('https://scripts.cisco.com/api/v2/auth/login', auth=("",""))
-    print(r.headers["access_token"])
-    return r.headers["access_token"]
-
+def get_sso_cookie():
+    with open('oreo', 'rb') as cookie:
+        return pickle.load(cookie)
 
 def get_nearby_cities(city, state):
     r = requests.get('http://10.105.217.238:30400/api/v1/getNearbyCities?rangeInKilometer=50&country=IND&searchText='
@@ -105,12 +105,12 @@ def get_nearby_cities(city, state):
 
 def insert_lead(input_json):
     insert_json = {
-        "helpType": input_json["res1"],
-        "helpCity": input_json["city"],
-        "helpState": input_json["state"],
+        "leadType": input_json["res1"],
+        "leadCity": input_json["city"],
+        "leadState": input_json["state"],
         "contactName": input_json["contactname"],
-        "contactNumber": input_json["contactnumber"]
+        "contactNumber": input_json["contactnumber"],
+        "pinCode": input_json["pinCode"],
+        "userId": input_json["user_id"],
     }
     return perform_mongo_db_insert(insert_json, "leads", "post_quick")
-
-perform_mongo_db_search({'state': 'Rajasthan', 'status': 'request', 'city': 'Jaipur', 'req1': 'Hospitalization (ICU)', 'RequestElaborate': 'Need Help', 'sev': 'Emergency', 'res1': '', 'resourceElaborate': '', 'pincode': '302019', 'contactname': '', 'contactnumber': '', 'verified': 'false', 'notverified': 'false'})

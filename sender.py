@@ -78,3 +78,21 @@ def non_urgent_message_chain(token,raw_data,message,parentId):
     print(response.content)
     print("Here's the message status:")
     print(response.status_code)
+
+def updateMessage(roomId,parentId,token,message):
+    url="https://webexapis.com/v1/messages/{}".format(parentId)
+
+    headers={'content-type': "application/json; charset=utf-8",
+         'authorization':'Bearer {}'.format(token),
+         'accept':"application/json"}
+
+    card={
+     "roomId": roomId,
+      "markdown": message,
+    }
+
+
+    payload=json.dumps(card)
+    response = requests.request("PUT", url, data=payload, headers=headers)
+    # send_message=response.json()
+    return response.status_code

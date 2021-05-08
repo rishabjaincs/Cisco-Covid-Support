@@ -6,3 +6,5 @@ tcl/
 .ipynb_checkpoints/
 TestCode.ipynb
 *.ipynb
+*.key
+oreo
