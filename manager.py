@@ -12,7 +12,7 @@ from UserConsentCard import BuddyAssistApproval
 from LeadFeedbackCollector import LeadFeedback
 from CovidHelp import gettingStarted
 from sender import non_urgent_message_chain
-from mongoConnector import perform_mongo_db_search
+from mongoConnector import perform_mongo_db_search,compiling_data_insert
 import stdiomask
 import pandas as pd
 from tabulate import tabulate
@@ -40,7 +40,7 @@ def AttachmentValidator(raw_data):
     status=True
     ReqDetails=raw_data['data']['inputs']
     user_info=get_requester_detail(raw_data['data']['personId'])
-    ReqDetails['user_id']=user_info
+    ReqDetails['user_id']=user_info['emails'][0].replace("@cisco.com","")
     if ReqDetails['status']=='start':
         if ReqDetails['state']=='':
             message="\ud83d\udd34 **Please Select the Appropriate State !!** \ud83d\udd34"
@@ -66,15 +66,14 @@ def AttachmentValidator(raw_data):
             sendIN(token,raw_data,message)
         if status==True:
             search_result=perform_mongo_db_search(ReqDetails)
-            if "status" in search_result.keys():
-                if search_result['status']=="danger":      
-                    BuddyAssistApproval(ReqDetails,user_info,raw_data['data']['messageId'],token)
+            if search_result['total']== 0: 
+                BuddyAssistApproval(ReqDetails,user_info,raw_data['data']['messageId'],token)
             else:
                 for lead in range(0,search_result['total']):
-                    del search_result["rows"][lead]["_id"]
-                    message = dataFormatter(search_result["rows"][lead])
-                    sendIN(token,raw_data,message)
-                    LeadFeedback(raw_data['data']['roomId'],raw_data['data']['messageId'],token,search_result["rows"][lead]["leadId"])
+                    # del search_result["rows"][lead]["_id"]
+                    # message = dataFormatter(search_result["rows"][lead])
+                    # sendIN(token,raw_data,message)
+                    LeadFeedback(raw_data['data']['roomId'],raw_data['data']['messageId'],token,search_result["rows"][lead])
 
     elif ReqDetails['status']=='insert':
 
@@ -83,20 +82,20 @@ def AttachmentValidator(raw_data):
             message="\ud83d\udd34 **Please Select the Appropriate State !!** \ud83d\udd34"
             status=False
             sendIN(token,raw_data,message)
-        elif ReqDetails['req1']=='':
-            message="\ud83d\udd34 **Please Select the Appropriate Requirement !!** \ud83d\udd34"
+        elif ReqDetails['res1']=='':
+            message="\ud83d\udd34 **Please Select the Appropriate Response !!** \ud83d\udd34"
             status=False
             sendIN(token,raw_data,message)
-        elif ReqDetails['sev']=='':
-            message="\ud83d\udd34 **Please Select the Appropriate Criticality !!** \ud83d\udd34"
+        elif ReqDetails['city']=='':
+            message="\ud83d\udd34 **Please Select the Appropriate City !!** \ud83d\udd34"
             status=False
             sendIN(token,raw_data,message)
         elif ReqDetails['contactname']=='':
-            message="\ud83d\udd34 **Please Enter the Contact Name !!** \ud83d\udd34"
+            message="\ud83d\udd34 **Please Enter the Primary Contact Name !!** \ud83d\udd34"
             status=False
             sendIN(token,raw_data,message)
         elif ReqDetails['contactnumber']=='' and len(ReqDetails['contactnumber'])<10:
-            message="\ud83d\udd34 **Please Enter the Contact Number !!** \ud83d\udd34"
+            message="\ud83d\udd34 **Please Enter the Primary Contact Number !!** \ud83d\udd34"
             status=False
             sendIN(token,raw_data,message)
         elif ReqDetails['verified']==ReqDetails['notverified']:
@@ -104,20 +103,13 @@ def AttachmentValidator(raw_data):
             status=False
             sendIN(token,raw_data,message)
         if status==True:
-            search_result=perform_mongo_db_search(ReqDetails)
-            if "status" in search_result.keys():
-                if search_result['status']=="danger":      
-                    BuddyAssistApproval(ReqDetails,user_info,raw_data['data']['messageId'],token)
-            else:
-                for lead in range(0,search_result['total']):
-                    del search_result["rows"][lead]["_id"]
-                    message=str(search_result["rows"][lead]["additionalComments"])
-                    sendIN(token,raw_data,message)
+            compiling_data_insert(ReqDetails)
 
     elif ReqDetails['status']=='helpful':
         message="___Thanks for your Feedback, It will help us to provide better leads !!___"
         updateIN(raw_data['data']['roomId'],raw_data['data']['messageId'],token,message)
 
+    print(ReqDetails)
 
 def dataFormatter(getInfo):
     requestedLead = pd.DataFrame(getInfo)

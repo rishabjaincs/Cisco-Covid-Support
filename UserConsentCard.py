@@ -26,23 +26,10 @@ def approval_frame(inputs,user_info,parent_id):
             "type": "ActionSet",
             "actions": [
                 {
-                    "type": "Action.Submit",
-                    "title": "YES",
-                    "style": "positive",
-                    "id": "yes",
-                    "data":{
-                      "access":True,
-                      "status":inputs['status'],
-                      "UserEmail":user_info['emails'][0],
-                      "UserName":user_info['firstName'],
-                      "state":inputs['state'],
-                      "pincode":inputs['pincode'],
-                      "parentId":parent_id,
-                      "req1":inputs['req1'],
-                      "RequestElaborate":inputs['RequestElaborate'],
-                      "sev":inputs['sev']
-                  }
-                },
+                  "type": "Action.OpenUrl",
+                  "title": "YES",
+                  "url": "https://forms.office.com/r/uTT3C4ur9K"
+              },
                 {
                     "type": "Action.Submit",
                     "title": "NO",
@@ -58,8 +45,8 @@ def approval_frame(inputs,user_info,parent_id):
                       "parentId":parent_id,
                       "req1":inputs['req1'],
                       "RequestElaborate":inputs['RequestElaborate'],
-                      "sev":inputs['sev']
-
+                      "sev":inputs['sev'],
+                      "city":inputs['city']
                   }
                 }
             ],

@@ -85,7 +85,7 @@ def body_frame(inputs,user_info):
                     },
                     {
                         "title": "District:",
-                        "value": inputs['pincode']
+                        "value": inputs['city']
                     },
                     {
                         "title": "PIN Code:",
