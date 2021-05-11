@@ -14,7 +14,7 @@ def body_frame(inputs,user_info):
 
     if inputs['pincode']=='':
         inputs['pincode']='Not Provided'
-        
+
     body={
         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
         "type": "AdaptiveCard",
@@ -119,6 +119,7 @@ def body_frame(inputs,user_info):
 
 
 def InformationRequestCard(inputs,user_info,token):
+    print("I am here !!!")
     body=body_frame(inputs,user_info)
     url="https://webexapis.com/v1/messages"
 
@@ -128,7 +129,7 @@ def InformationRequestCard(inputs,user_info,token):
 
     card={
       "roomId":'Y2lzY29zcGFyazovL3VzL1JPT00vMjcwZjFjOTAtYWQ5Yi0xMWViLWEzZTAtNjU3ZWM1NjhhY2Q0',
-      "markdown": "Moderators Validation for Token !!!",
+      "markdown": "Emergency | User requested information is not available in lead DB !!!",
       "attachments": [
         {
           "contentType": "application/vnd.microsoft.card.adaptive",
@@ -140,4 +141,5 @@ def InformationRequestCard(inputs,user_info,token):
     payload=json.dumps(card)
     response = requests.request("POST", url, data=payload, headers=headers)
     send_message=response.json()
-    return send_message['id']
+    print(send_message)
+    return send_message

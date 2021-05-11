@@ -179,11 +179,17 @@ def DisclaimerInfo(raw_data):
 def FurtherAssistanceNeeded(raw_data):
     ReqDetails=raw_data['data']['inputs']
     user_info=get_requester_detail(raw_data['data']['personId'])
-    if ReqDetails['access']==True:
-        deleteIN(token,raw_data)
-        message="Your request has been processed !!!"
-        non_urgent_message_chain(token,raw_data,message,ReqDetails['parentId'])
-        InformationRequestCard(ReqDetails,user_info,token)
+    ReqDetails['user_id']=user_info['emails'][0].replace("@cisco.com","")
+    userDisplayName = user_info['firstName']
+    if ReqDetails['access']==False:
+        # deleteIN(token,raw_data)
+        # message="Your request has been processed !!!"
+        # non_urgent_message_chain(token,raw_data,message,ReqDetails['parentId'])
+        if ReqDetails['sev']=='Emergency':
+            InformationRequestCard(ReqDetails,user_info,token)
+        message="___Hi {}, We are trying to add more leads everyday. If you have any helpful lead for any resource, consider sharing via ADD Information !!___".format(userDisplayName)
+        updateIN(raw_data['data']['roomId'],raw_data['data']['messageId'],token,message)
+
     else:
         deleteIN(token,raw_data)
         print("send it over to DB by default")
