@@ -76,6 +76,16 @@ def body_frame(cityMap,state):
                 ]
             },
             {
+            "type": "TextBlock",
+            "text": "__Note:__ Entering PIN Code helps to collect more precise leads.",
+            "horizontalAlignment": "Center",
+            "size": "Small",
+            "maxLines": 8,
+            "color": "Attention",
+            "spacing": "ExtraLarge",
+            "wrap": True
+        },
+            {
                 "type": "ActionSet",
                 "actions": [
                     {
@@ -388,19 +398,8 @@ def body_frame(cityMap,state):
                                             "items": [
                                                 {
                                                     "type": "Input.Toggle",
-                                                    "title": "Verified",
+                                                    "title": "I provide my consent, that the provided lead is verified.",
                                                     "id": "verified"
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "type": "Column",
-                                            "width": "stretch",
-                                            "items": [
-                                                {
-                                                    "type": "Input.Toggle",
-                                                    "title": "Not Verified",
-                                                    "id": "notverified"
                                                 }
                                             ]
                                         }

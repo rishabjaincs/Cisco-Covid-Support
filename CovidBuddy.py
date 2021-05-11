@@ -11,12 +11,10 @@ def body_frame(inputs,user_info):
         user_profile=user_info['avatar']
     else:
         user_profile="https://www.grandmetric.com/wp-content/uploads/2018/02/Screenshot_626.png"
-    if inputs['state']=='':
-        inputs['state']='0'
+
     if inputs['pincode']=='':
-        inputs['pincode']='NONE'
-    if inputs['sev']=='':
-        inputs['sev']='3'
+        inputs['pincode']='Not Provided'
+        
     body={
         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
         "type": "AdaptiveCard",

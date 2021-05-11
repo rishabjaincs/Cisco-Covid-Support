@@ -5,10 +5,21 @@ from flask import request,jsonify
 import datetime
 
 def epochTimeCoverter(epochTime:int):
-    convertedTime = datetime.datetime.fromtimestamp(epochTime//1000).strftime('%Y-%m-%d %H:%M:%S')
+    convertedTime = datetime.datetime.fromtimestamp(epochTime//1000).strftime('%d %B, %Y %I:%M %p')
     return convertedTime
 
 def body_frame(leadInfo):
+    if leadInfo["additionalContactNumber"]==None:
+        addnContactNumber="Not Available"
+    else:
+        addnContactNumber="[{}](tel:{})".format(leadInfo["additionalContactNumber"],leadInfo["additionalContactNumber"])
+
+    if leadInfo["additionalContacts"]==None:
+        leadInfo["additionalContacts"]="Not Available"
+
+    if leadInfo['additionalComments']==None:
+        leadInfo['additionalComments']="Not Available"
+
     body={
     "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -37,7 +48,7 @@ def body_frame(leadInfo):
                     },
                     {
                         "title": "Sec. Number",
-                        "value": "[{}](tel:{})".format(leadInfo["additionalContactNumber"],leadInfo["additionalContactNumber"])
+                        "value": addnContactNumber
                     },
                     {
                         "title": "Last Update",
@@ -50,24 +61,56 @@ def body_frame(leadInfo):
                 ]
             },
             {
+                "type": "TextBlock",
+                "text": "Additional Details:",
+                "weight": "Bolder",
+                "wrap": True
+            },
+            {
+                "type": "TextBlock",
+                "text": "{}".format(leadInfo['additionalComments']),
+                "spacing": "Small",
+                "wrap": True
+            },
+            {
                 "type": "ActionSet",
                 "actions": [
                     {
                         "type": "Action.Submit",
-                        "title": "Worked",
+                        "title": "Verified - Stock Available",
                         "data": {
                             "status": "helpful",
-                            "leadStatus": "worked",
+                            "leadStatus": "verifiedAndStckAvlbleCount",
                             "leadId": leadInfo["leadId"]
                         },
                         "style": "positive"
                     },
                     {
                         "type": "Action.Submit",
-                        "title": "Resource Not Available",
+                        "title": "Verified - Stock Not Available",
                         "data": {
                             "status": "helpful",
-                            "leadStatus": "resource-not-available",
+                            "leadStatus": "verifiedAndStckNtAvlbleCount",
+                            "leadId": leadInfo["leadId"]
+                        },
+                        "style": "destructive"
+                    },
+                    {
+                        "type": "Action.Submit",
+                        "title": "Not Answering",
+                        "data": {
+                            "status": "helpful",
+                            "leadStatus": "notAnsweringCount",
+                            "leadId": leadInfo["leadId"]
+                        },
+                        "style": "destructive"
+                    },
+                    {
+                        "type": "Action.Submit",
+                        "title": "Invalid",
+                        "data": {
+                            "status": "helpful",
+                            "leadStatus": "invalidCount",
                             "leadId": leadInfo["leadId"]
                         },
                         "style": "destructive"
@@ -77,23 +120,13 @@ def body_frame(leadInfo):
                         "title": "Not Reachable",
                         "data": {
                             "status": "helpful",
-                            "leadStatus": "not-reachable",
-                            "leadId": leadInfo["leadId"]
-                        },
-                        "style": "destructive"
-                    },
-                    {
-                        "type": "Action.Submit",
-                        "title": "Incorrect Contact Information",
-                        "data": {
-                            "status": "helpful",
-                            "leadStatus": "incorrect-contact",
+                            "leadStatus": "notReachableCount",
                             "leadId": leadInfo["leadId"]
                         },
                         "style": "destructive"
                     }
                 ],
-                "id": "Spam",
+                "id": "Endfeedback",
                 "horizontalAlignment": "Center"
             }
             # ,
