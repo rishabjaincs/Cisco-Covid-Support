@@ -20,6 +20,9 @@ def body_frame(leadInfo):
     if leadInfo['additionalComments']==None:
         leadInfo['additionalComments']="Not Available"
 
+    if leadInfo['pinCode']==None:
+        leadInfo['pinCode']="Not Available"
+
     body={
     "type": "AdaptiveCard",
     "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -34,6 +37,14 @@ def body_frame(leadInfo):
             {
                 "type": "FactSet",
                 "facts": [
+                    {
+                        "title": "City",
+                        "value": leadInfo["leadCity"]
+                    },
+                    {
+                        "title": "PIN Code",
+                        "value": leadInfo["pinCode"]
+                    },
                     {
                         "title": "Contact Name",
                         "value": leadInfo["contactName"]
@@ -52,7 +63,7 @@ def body_frame(leadInfo):
                     },
                     {
                         "title": "Last Update",
-                        "value": "{} ({})".format("Verified & Available",leadInfo["lastUpdateBy"])
+                        "value": "{} - __{}__ ({})".format("Verified & Available",leadInfo["verifiedAndStckAvlbleCount"],leadInfo["lastUpdateBy"])
                     },
                     {
                         "title": "Timeline",
@@ -81,7 +92,8 @@ def body_frame(leadInfo):
                         "data": {
                             "status": "helpful",
                             "leadStatus": "verifiedAndStckAvlbleCount",
-                            "leadId": leadInfo["leadId"]
+                            "leadId": leadInfo["leadId"],
+                            "Id":leadInfo["_id"]["$oid"]
                         },
                         "style": "positive"
                     },
@@ -91,7 +103,8 @@ def body_frame(leadInfo):
                         "data": {
                             "status": "helpful",
                             "leadStatus": "verifiedAndStckNtAvlbleCount",
-                            "leadId": leadInfo["leadId"]
+                            "leadId": leadInfo["leadId"],
+                            "Id":leadInfo["_id"]["$oid"]
                         },
                         "style": "destructive"
                     },
@@ -101,7 +114,8 @@ def body_frame(leadInfo):
                         "data": {
                             "status": "helpful",
                             "leadStatus": "notAnsweringCount",
-                            "leadId": leadInfo["leadId"]
+                            "leadId": leadInfo["leadId"],
+                            "Id":leadInfo["_id"]["$oid"]
                         },
                         "style": "destructive"
                     },
@@ -111,7 +125,8 @@ def body_frame(leadInfo):
                         "data": {
                             "status": "helpful",
                             "leadStatus": "invalidCount",
-                            "leadId": leadInfo["leadId"]
+                            "leadId": leadInfo["leadId"],
+                            "Id":leadInfo["_id"]["$oid"]
                         },
                         "style": "destructive"
                     },
@@ -121,7 +136,8 @@ def body_frame(leadInfo):
                         "data": {
                             "status": "helpful",
                             "leadStatus": "notReachableCount",
-                            "leadId": leadInfo["leadId"]
+                            "leadId": leadInfo["leadId"],
+                            "Id":leadInfo["_id"]["$oid"]
                         },
                         "style": "destructive"
                     }

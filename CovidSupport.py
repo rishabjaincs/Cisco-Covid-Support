@@ -186,7 +186,8 @@ def body_frame(cityMap,state):
                                                         }
                                                     ],
                                                     "placeholder": "Select Severity",
-                                                    "id": "sev"
+                                                    "id": "sev",
+                                                    "value": "Moderate"
                                                 }
                                             ]
                                         }
@@ -243,7 +244,7 @@ def body_frame(cityMap,state):
                                                     {'title': 'Oxygen', 'value': 'Oxygen'},
                                                     {'title': 'Quarantine Centre', 'value': 'Quarantine Centre'},
                                                     {'title': 'Ventilator', 'value': 'Ventilator'}],
-                                                    "placeholder": "Responses",
+                                                    "placeholder": "Select Resources",
                                                     "id": "res1"
                                                 }
                                             ]
@@ -419,7 +420,13 @@ def body_frame(cityMap,state):
                                 }
                             ]
                         }
-                    }
+                    },
+                    {
+                    "type": "Action.OpenUrl",
+                    "title": "Feedback",
+                    "url": "http://cs.co/cvbotfb",
+                        "style": "positive"
+                }
                     # ,
                     # {
                     #     "type": "Action.ShowCard",

@@ -7,6 +7,7 @@ from sender import send_message as sendIN
 from sender import direct_message as sendOUT
 from sender import delete_message as deleteIN
 from sender import updateMessage as updateIN
+from sender import direct_personalEmail as personalOUT
 from CovidBuddy import InformationRequestCard
 from UserConsentCard import BuddyAssistApproval
 from LeadFeedbackCollector import LeadFeedback
@@ -25,16 +26,67 @@ headers={'content-type': "application/json; charset=utf-8",
          'authorization':'Bearer {}'.format(token),
          'accept':"application/json"}
 
+def get_mention_id(person_id):
+    url="https://webexapis.com/v1/people/{}".format(person_id)
+
+    headers={
+      'content-type': "application/json; charset=utf-8",
+      'authorization':"Bearer "+token,
+      'accept':"application/json"
+    }
+
+    response = requests.request("GET", url, headers=headers)
+    return response.json()['emails'][0]
+    print("Here's the message statue")
+    print(response.status_code)
+
+def message_details(message_ID):
+    headers = {
+        'content-type': "application/json; charset=utf-8",
+        'authorization': "Bearer " + token,
+        'accept': "application/json"
+    }
+    messageID="https://webexapis.com/v1/messages/{}".format(message_ID)
+    response = requests.request("GET", messageID, headers=headers)
+    data=response.json()
+    return data['mentionedPeople']
+
 def get_requester_detail(user_id):
     url="https://webexapis.com/v1/people/{}".format(user_id)
     response=requests.request("GET", url, headers=headers)
     profileDetail=response.json()
     return profileDetail
 
+
+
+
 def UserValidator(raw_data):
-    if raw_data['data']['roomType']=='direct' and raw_data['data']["personEmail"]!="covid_support@webex.bot":
+    if raw_data['data']['roomType']=='direct' and raw_data['data']["personEmail"]!="coverified@webex.bot":
         gettingStarted(raw_data['data']['personEmail'],token)
-        
+    else:
+        if raw_data['data']['roomType']=='group' and ((raw_data['data']['markdown']).lower()).startswith("coverified support"):
+            mentionedIDs = message_details(raw_data['data']['id'])
+            if len(mentionedIDs)>1:
+                for person_id in mentionedIDs[1:]:
+                    message = '''__Disclaimer :__ _This BOT is a best effort project initiated to help user to check and contribute from the Public Information Database that can help in the recent Covid Crisis._
+        <br> __To continue__, Please type __help__ and BOT \ud83e\udd16 will assist you further.'''
+                    personalEmail=get_mention_id(person_id)
+                    print("The user mentioned :")
+                    print(personalEmail)
+                    personalOUT(token,personalEmail,message)
+                
+            else:
+                cecIDs=(((raw_data['data']['markdown']).lower()).replace("coverified support","")).split(" ")
+                for cec in cecIDs:
+                    print("The user mentioned :")
+                    print(cec)
+                    personalEmail=(cec.replace(" ",""))+"@cisco.com"
+                    message = '''__Disclaimer :__ _This BOT is a best effort project initiated to help user to check and contribute from the Public Information Database that can help in the recent Covid Crisis._
+            <br> __To continue__, Please type __help__ and BOT \ud83e\udd16 will assist you further.'''
+                    personalOUT(token,personalEmail,message)
+
+
+
 
 def AttachmentValidator(raw_data):
     status=True
@@ -104,15 +156,15 @@ def AttachmentValidator(raw_data):
             status=False
             sendIN(token,raw_data,message)
 
-        elif " " not in ReqDetails['contactname']:
-            message="\ud83e\udd16 : Please provide Full Contact Name, Eg: John A !! !!"
-            status=False
-            sendIN(token,raw_data,message)
+        # elif " " not in ReqDetails['contactname']:
+        #     message="\ud83e\udd16 : Please provide Full Contact Name, Eg: John A !! !!"
+        #     status=False
+        #     sendIN(token,raw_data,message)
 
-        elif " " not in ReqDetails['contactnamesecondary'] and ReqDetails['contactnamesecondary']!="":
-            message="\ud83e\udd16 : Please provide Full Contact Name, Eg: John A !!"
-            status=False
-            sendIN(token,raw_data,message)
+        # elif " " not in ReqDetails['contactnamesecondary'] and ReqDetails['contactnamesecondary']!="":
+        #     message="\ud83e\udd16 : Please provide Full Contact Name, Eg: John A !!"
+        #     status=False
+        #     sendIN(token,raw_data,message)
 
         elif ReqDetails['contactnumber']=='' or len(ReqDetails['contactnumber'])!=10:
             message="\ud83e\udd16 : Please Enter the correct Primary Contact Number !!"
@@ -169,10 +221,25 @@ def AttachmentValidator(raw_data):
 
 
 def DisclaimerInfo(raw_data):
-    if raw_data['data']['roomType']=='direct' and raw_data['data']["personEmail"]!="covid_support@webex.bot":
-        message = '''__Disclaimer :__ This BOT is a best effort project initiated to help user to check and contribute from the Public Information Database that can help in the recent Covid Crisis.
-        To continue, Please type anything and BOT will assist you further'''
-        sendOUT(token,raw_data,message)
+    if raw_data['event']=='created':
+        if raw_data['data']['personEmail']=='coverified@webex.bot' and raw_data['data']['roomType']=='group':
+            message = '''Hi There, I am here to assist you to find and share leads and to get information that can help you to track Covid Related Resources.
+            __Disclaimer :__ _This BOT \ud83e\udd16 is a best effort project initiated to help user to check and contribute from the Public Information Database that our volunteers are continuously adding and verifying everyday._
+            <br>`Here are the things that I can do:`<br>
+            <h3>In a Group:</h3>
+            ___@Coverified___ support ___@Mention User___ or ___CCID___<br>
+            __Example:__ @Coverified support rajatag esramasa rishabj
+            __Example:__ @Coverified support @Rajat @Eswaramoorthy @Rishab<br>
+            __Note:__ _Current Version supports multiple CCID or Mentions but not a mix of both !!!_<br>
+            <h3>Direct:</h3>
+            Please type __help__ and The BOT \ud83e\udd16 will assist you further.'''
+
+            sendOUT(token,raw_data,message)
+
+        elif raw_data['data']['personEmail']!='coverified@webex.bot' and raw_data['data']['roomType']=='group':
+            message='''Hi {}, I am Coverified BOT \ud83e\udd16. I can assist you in searching lead for your near and dear, all across India. You can also share new leads via ADD Information Section.
+            <br> __To continue__, Please type __help__ and I \ud83e\udd16 will assist you further.'''.format((raw_data['data']['personDisplayName']).split(" ")[0])
+            personalOUT(token,raw_data['data']['personEmail'],message)
 
 
 

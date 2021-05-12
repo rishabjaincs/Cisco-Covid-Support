@@ -11,6 +11,23 @@ def directMessage(parentId,roomId,message):
     }
     return payload
 
+def direct_personalEmail(token,personalEmail,message):
+    url="https://webexapis.com/v1/messages"
+    payload={
+     "toPersonEmail": personalEmail,
+      "markdown": message
+    }
+
+    headers={
+      'content-type': "application/json; charset=utf-8",
+      'authorization':"Bearer "+token,
+      'accept':"application/json"
+    }
+
+    response = requests.request("POST", url, data=json.dumps(payload), headers=headers)
+    print(response.content)
+    print("Here's the message status:")
+    print(response.status_code)  
 
 def send_message(token,raw_data,message):
     url="https://webexapis.com/v1/messages"

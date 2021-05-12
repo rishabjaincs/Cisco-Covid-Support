@@ -80,9 +80,9 @@ def compiling_data_insert(input_json):
 def compiling_data_vote(input_json):
     response_array_json = None
     if input_json['status'] == "helpful":
-        id = input_json["leadId"]
+        id = input_json["Id"]
         field = input_json["leadStatus"]
-        action = input_json["leadStatus"]
+        action = 'select'
 
         insert_json = {
         "id": id,
@@ -101,15 +101,16 @@ def compiling_data_vote(input_json):
         "test": True
         }},
         }
+        print(json_payload)
         r = requests.post('https://scripts.cisco.com/api/v2/jobs/coverified_backend',
         data=json.dumps(json_payload),
         cookies=get_sso_cookie(),
         headers={'Content-Type': 'application/json'})
-        pprint(r.text)
+        # pprint(r.text)
         server_response = json.loads(r.text)
-        print(server_response)
+        # print(server_response)
         response_array = server_response["data"]["variables"]["_0"]["json_out"]
-        pprint(response_array)
+        # pprint(response_array)
         response_array_json = json.loads(response_array)
 
 def perform_mongo_db_search(input_json):
