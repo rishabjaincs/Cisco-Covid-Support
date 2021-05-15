@@ -82,8 +82,9 @@ def UserValidator(raw_data):
                     print("The user mentioned :")
                     print(cec)
                     personalEmail=(cec.replace(" ",""))+"@cisco.com"
-                    message = '''__Disclaimer :__ _This BOT is a best effort project initiated to help user to check and contribute from the Public Information Database that can help in the recent Covid Crisis._
-            <br> __To continue__, Please type __help__ and BOT \ud83e\udd16 will assist you further.'''
+                    message = '''Hi, I am Coverified BOT \ud83e\udd16. I can assist you in searching lead for your near and dear, all across India. You can also share new leads via ADD Information Section.
+                    __Disclaimer :__ _This BOT is a best effort project initiated to help user to check and contribute from the Public Information Database that can help in the recent Covid Crisis._
+        <br> __To continue__, Please type __help__ and BOT \ud83e\udd16 will assist you further.'''
                     personalOUT(token,personalEmail,message)
 
 
